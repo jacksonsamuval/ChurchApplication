@@ -46,6 +46,12 @@ public class PastorService {
     }
 
     public ResponseEntity<String> addPastorId(PastorId pastorId) {
+        String email = pastorId.getEmail();
+        PastorId pastorRepo = pastorIdRepo.findByEmail(email);
+        if(pastorRepo!=null)
+        {
+            return new ResponseEntity<>("Failure : Pastor With similar Email Exists", HttpStatus.BAD_REQUEST);
+        }
         pastorIdRepo.save(pastorId);
         return new ResponseEntity<>("Success: Pastor ID added", HttpStatus.OK);
     }
