@@ -42,7 +42,7 @@ public class SecurityConfig
 		http
 				.csrf(customizer -> customizer.disable())
 				.authorizeHttpRequests(request -> request
-						.requestMatchers("signup", "auth/login","/auth/login", "auth/resetPassword","/auth/resetPassword","auth/register","/auth/register","auth/forgotPassword","auth/home","auth/hello","verifyOtp","/verifyOtp","/updatePassword","/validate","validate","auth/otpVerification","/auth/otpVerification","/auth/resendOtp","auth/resendOtp","auth/setProfilePicture","/auth/setProfilePicture","/auth/setProfilePicture/{userId}","/auth/getProfilePicture/{userId}").permitAll().anyRequest().authenticated())
+						.requestMatchers("signup", "auth/login","/auth/login", "auth/resetPassword","/auth/resetPassword","auth/register","/auth/register","auth/forgotPassword","auth/home","auth/hello","verifyOtp","/verifyOtp","/updatePassword","/validate","validate","auth/otpVerification","/auth/otpVerification","/auth/resendOtp","auth/resendOtp","auth/setProfilePicture","/auth/setProfilePicture","/auth/setProfilePicture/{userId}","/auth/getProfilePicture/{userId}","/home/pastorVerify","/home/addPastorId").permitAll().anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())
 				.sessionManagement(session -> 
 							session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
