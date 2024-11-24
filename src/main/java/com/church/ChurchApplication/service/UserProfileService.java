@@ -33,7 +33,7 @@ public class UserProfileService {
         return profilePictureRepo.save(profilePicture);
     }
 
-    public ProfilePicture getProfileById(Integer userId) {
-        return profilePictureRepo.findUserById(userId);
+    public ProfilePicture getProfileById(Integer uloginId) {
+        return profilePictureRepo.findUserByUloginId(uloginId);
     }
 }

@@ -28,6 +28,7 @@ public class Ulogin{
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private ProfilePicture profilePicture;
 
+
 	public Ulogin(Integer id, String name, String email, String mobileNo, String username, String password, String role, ProfilePicture profilePicture) {
 		this.id = id;
 		this.name = name;

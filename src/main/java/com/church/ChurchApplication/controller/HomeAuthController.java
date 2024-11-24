@@ -20,6 +20,7 @@ import com.church.ChurchApplication.repo.*;
 import com.church.ChurchApplication.entity.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -61,10 +62,15 @@ public class HomeAuthController {
 	{
 		return "test purpose - how are you guys";
 	}
-	
+
+	@GetMapping("getUser")
+	public ResponseEntity<GetUserDetails> getUser(@RequestParam String email)
+	{
+		return userService.getUser(email);
+	}
+
 	
 	 //Required Mappings
-	 
 	 
 	@PostMapping("register")
 	public ResponseEntity<String> login(@RequestBody Ulogin ulogin)
@@ -151,10 +157,10 @@ public class HomeAuthController {
 		}
 	}
 
-	@GetMapping("/getProfilePicture/{userId}")
-	public ResponseEntity<byte[]> getImageByProductId(@PathVariable Integer userId)
+	@GetMapping("/getProfilePicture/{uloginId}")
+	public ResponseEntity<byte[]> getImageByProductId(@PathVariable Integer uloginId)
 	{
-		ProfilePicture profilePicture = userProfileService.getProfileById(userId);
+		ProfilePicture profilePicture = userProfileService.getProfileById(uloginId);
 		byte[] imageFile = profilePicture.getImageDate();
 		return ResponseEntity.ok().contentType(MediaType.valueOf(profilePicture.getImageType()))
 				.body(imageFile);

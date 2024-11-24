@@ -2,6 +2,7 @@ package com.church.ChurchApplication.service;
 
 import java.util.Optional;
 
+import com.church.ChurchApplication.dto.GetUserDetails;
 import com.church.ChurchApplication.emailService.EmailService;
 import com.church.ChurchApplication.emailService.OtpService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,5 +126,16 @@ public class UserService {
 		
 	}
 
-	
+    public ResponseEntity<GetUserDetails> getUser(String email) {
+		GetUserDetails getUserDetails = new GetUserDetails();
+		Ulogin user =  repo.findUserByEmail(email);
+		getUserDetails.setId(user.getId());
+		getUserDetails.setName(user.getName());
+		getUserDetails.setUsername(user.getUsername());
+		getUserDetails.setMobileNo(user.getMobileNo());
+		getUserDetails.setEmail(user.getEmail());
+		getUserDetails.setRole(user.getRole());
+		return new ResponseEntity<>(getUserDetails, HttpStatus.OK );
+
+    }
 }
