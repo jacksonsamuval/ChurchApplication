@@ -15,6 +15,10 @@ public class UserPrincipal implements UserDetails {
 		this.ulogin=ulogin;
 	}
 
+	public Ulogin getUser() {
+		return ulogin;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return null;

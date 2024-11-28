@@ -134,21 +134,20 @@ public class HomeAuthController {
 	
 	@PostMapping("resendOtp")
 	public ResponseEntity<String> resendOtp(@RequestBody PasswordResetRequest passwordResetRequest) {
-	    
 		return userService.resendOtp(passwordResetRequest);
 	}
 	
 	@PostMapping("resetPassword")
 	public ResponseEntity<String> resetPasswordRequest(@RequestBody ResetPasswordRequest request) {
-	    
 		return userService.resetPassword(request);
 	}
 
-	@PostMapping("setProfilePicture/{userId}")
-	public ResponseEntity<?> setProfilePicture(@PathVariable Integer userId,
-											   @RequestPart MultipartFile imageFile) {
+	@PostMapping("setProfilePicture")
+	public ResponseEntity<?> setProfilePicture( @RequestPart MultipartFile imageFile) {
 		try {
-			ProfilePicture profilePicture1 = userProfileService.saveProfilePicture(userId, imageFile);
+			Ulogin users = userService.getCurrentUser();
+			System.out.println(users.getEmail());
+			ProfilePicture profilePicture1 = userProfileService.saveProfilePicture(users.getId(), imageFile);
 			return new ResponseEntity<>(profilePicture1,HttpStatus.CREATED);
 		}
 		catch (Exception e)
@@ -157,14 +156,14 @@ public class HomeAuthController {
 		}
 	}
 
-	@GetMapping("/getProfilePicture/{uloginId}")
-	public ResponseEntity<byte[]> getImageByProductId(@PathVariable Integer uloginId)
+	@GetMapping("/getProfilePicture")
+	public ResponseEntity<byte[]> getImageByProductId()
 	{
-		ProfilePicture profilePicture = userProfileService.getProfileById(uloginId);
+		Ulogin users = userService.getCurrentUser();
+		ProfilePicture profilePicture = userProfileService.getProfileById(users.getId());
 		byte[] imageFile = profilePicture.getImageDate();
+		System.out.println(users.getEmail());
 		return ResponseEntity.ok().contentType(MediaType.valueOf(profilePicture.getImageType()))
 				.body(imageFile);
 	}
-
-
 }

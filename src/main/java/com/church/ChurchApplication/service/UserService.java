@@ -5,9 +5,11 @@ import java.util.Optional;
 import com.church.ChurchApplication.dto.GetUserDetails;
 import com.church.ChurchApplication.emailService.EmailService;
 import com.church.ChurchApplication.emailService.OtpService;
+import com.church.ChurchApplication.entity.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.church.ChurchApplication.dto.PasswordResetRequest;
@@ -24,17 +26,17 @@ public class UserService {
 	
 	@Autowired
 	private UserRepo repo;
-	
 	@Autowired
 	private OtpService otpService;
-	
+
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Autowired
 	private PasswordResetTokenRepository passwordResetTokenRepository;
-	
-	public ResponseEntity<String> saveUser(Ulogin user)
+
+
+public ResponseEntity<String> saveUser(Ulogin user)
 	{
 		if(user==null || user.getEmail()==null)
 		{
@@ -138,4 +140,9 @@ public class UserService {
 		return new ResponseEntity<>(getUserDetails, HttpStatus.OK );
 
     }
+
+	public Ulogin getCurrentUser() {
+		UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return userPrincipal.getUser();
+	}
 }
