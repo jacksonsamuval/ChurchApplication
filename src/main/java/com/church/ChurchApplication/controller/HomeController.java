@@ -4,6 +4,7 @@ import com.church.ChurchApplication.entity.FavoriteVideo;
 import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.service.FavoriteVideoService;
 import com.church.ChurchApplication.service.HomeService;
+import com.church.ChurchApplication.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ public class HomeController {
 
     @Autowired
     private FavoriteVideoService favoriteVideoService;
+
+    @Autowired
+    private VideoService videoService;
 
     @GetMapping("deleteMyAccount")
     public ResponseEntity<String> deleteMyAccount(@RequestParam String email )
@@ -49,4 +53,10 @@ public class HomeController {
    {
        return favoriteVideoService.getAllFavoriteVideos();
    }
+
+    @PostMapping("/getVideo/{videoId}")
+    public ResponseEntity<?> getVideo(@PathVariable Integer videoId)
+    {
+        return videoService.findVideoById(videoId);
+    }
 }

@@ -26,10 +26,4 @@ public class AdminController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @GetMapping("/getVideo/{videoId}")
-    public ResponseEntity<?> getVideo(@PathVariable Integer videoId)
-    {
-        return videoService.findVideoById(videoId);
-    }
 }
