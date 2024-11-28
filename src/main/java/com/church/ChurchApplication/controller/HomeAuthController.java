@@ -147,8 +147,7 @@ public class HomeAuthController {
 		try {
 			Ulogin users = userService.getCurrentUser();
 			System.out.println(users.getEmail());
-			ProfilePicture profilePicture1 = userProfileService.saveProfilePicture(users.getId(), imageFile);
-			return new ResponseEntity<>(profilePicture1,HttpStatus.CREATED);
+			return userProfileService.saveProfilePicture(users.getId(), imageFile);
 		}
 		catch (Exception e)
 		{

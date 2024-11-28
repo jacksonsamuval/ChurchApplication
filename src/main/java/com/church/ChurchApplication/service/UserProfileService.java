@@ -21,17 +21,32 @@ public class UserProfileService {
     @Autowired
     private ProfilePictureRepo profilePictureRepo;
 
-    public ProfilePicture saveProfilePicture(Integer userId, MultipartFile imageFile) throws IOException {
-        Ulogin user = userRepo.findById(userId).orElseThrow(()->
+    public ResponseEntity<?> saveProfilePicture(Integer userId, MultipartFile imageFile) throws IOException {
+        Ulogin user = userRepo.findById(userId).orElseThrow(() ->
                 new RuntimeException("User Not Found")
         );
-        ProfilePicture profilePicture = new ProfilePicture();
-        profilePicture.setUser(user);
-        profilePicture.setImageName(imageFile.getOriginalFilename());
-        profilePicture.setImageType(imageFile.getContentType());
-        profilePicture.setImageDate(imageFile.getBytes());
-        return profilePictureRepo.save(profilePicture);
+
+        ProfilePicture profilePicture = profilePictureRepo.findByUser(user);
+
+        if (profilePicture != null) {
+            ProfilePicture profilePicture1 = profilePictureRepo.findById(profilePicture.getId()).orElseThrow(() ->
+                    new RuntimeException("Profile Picture Not Found"));
+            profilePicture1.setImageName(imageFile.getOriginalFilename());
+            profilePicture1.setImageType(imageFile.getContentType());
+            profilePicture1.setImageDate(imageFile.getBytes());
+            profilePictureRepo.save(profilePicture1);
+            return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
+        } else {
+            ProfilePicture profilePicture2 = new ProfilePicture();
+            profilePicture2.setUser(user);
+            profilePicture2.setImageName(imageFile.getOriginalFilename());
+            profilePicture2.setImageType(imageFile.getContentType());
+            profilePicture2.setImageDate(imageFile.getBytes());
+            profilePictureRepo.save(profilePicture2);
+            return new ResponseEntity<>("Added Successfully", HttpStatus.OK);
+        }
     }
+
 
     public ProfilePicture getProfileById(Integer uloginId) {
         return profilePictureRepo.findUserByUloginId(uloginId);
