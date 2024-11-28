@@ -48,4 +48,14 @@ public class VideoService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    public ResponseEntity<?> deleteVideo(Integer videoId) {
+        VideoStorage videoStorage = videoRepository.findById(videoId)
+                .orElseThrow(()-> new RuntimeException("Video Not Found"));
+        videoStorage.setVideoData(null);
+        videoStorage.setVideoType(null);
+        videoStorage.setVideoName("Video Deleted");
+        videoRepository.save(videoStorage);
+        return new ResponseEntity<>("Video Deleted SuccessFully",HttpStatus.OK);
+    }
 }

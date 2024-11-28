@@ -1,5 +1,7 @@
 package com.church.ChurchApplication.entity;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import jakarta.persistence.*;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -28,6 +30,9 @@ public class Ulogin{
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private ProfilePicture profilePicture;
 
+	@OneToMany(mappedBy = "ulogin",cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<PlayList> playList = new ArrayList<>();
+
 
 	public Ulogin(Integer id, String name, String email, String mobileNo, String username, String password, String role, ProfilePicture profilePicture) {
 		this.id = id;
@@ -38,6 +43,14 @@ public class Ulogin{
 		this.password = password;
 		this.role = role;
 		this.profilePicture = profilePicture;
+	}
+
+	public List<PlayList> getPlayList() {
+		return playList;
+	}
+
+	public void setPlayList(List<PlayList> playList) {
+		this.playList = playList;
 	}
 
 	public String getRole() {

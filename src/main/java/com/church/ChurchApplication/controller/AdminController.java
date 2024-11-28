@@ -26,4 +26,12 @@ public class AdminController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/deleteVideo/{videoId}")
+    public ResponseEntity<?> deleteVideo(@PathVariable Integer videoId)
+    {
+        return videoService.deleteVideo(videoId);
+    }
+
+
 }

@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import com.church.ChurchApplication.jwtService.JwtService;
@@ -85,12 +87,18 @@ public class HomeAuthController {
 		{
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(user.getEmailOrUsername(),user.getPassword()));
-			
-				return new ResponseEntity<>(jwtService.generateToken(user.getEmailOrUsername()),HttpStatus.OK);
+			if(authentication.isAuthenticated()) {
+				return new ResponseEntity<>(jwtService.generateToken(user.getEmailOrUsername()), HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+			}
 		}
-		catch(Exception e)
-		{
-			return new ResponseEntity<>("Invalid email or password", HttpStatus.UNAUTHORIZED);
+		catch (BadCredentialsException e) {
+			return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+		} catch (AuthenticationException e) {
+			return new ResponseEntity<>("Authentication failed", HttpStatus.UNAUTHORIZED);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

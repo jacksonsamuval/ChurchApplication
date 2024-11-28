@@ -7,7 +7,6 @@ public class VideoStorage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String videoName;
     private String videoType;
 
