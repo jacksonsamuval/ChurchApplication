@@ -29,6 +29,9 @@ public class HomeController {
     @Autowired
     private PlayListService playListService;
 
+    @Autowired
+    private SongService songService;
+
     @GetMapping("deleteMyAccount")
     public ResponseEntity<String> deleteMyAccount(@RequestParam String email )
     {
@@ -73,7 +76,7 @@ public class HomeController {
     }
 
     @GetMapping("getPlayList")
-    public List<PlayList> getPlayListForUser()
+    public ResponseEntity<List<PlayList>> getPlayListForUser()
     {
         Ulogin user = userService.getCurrentUser();
         return playListService.getPlayListForUser(user.getId());
@@ -95,6 +98,12 @@ public class HomeController {
     public ResponseEntity<?> deletePlayList(@PathVariable Integer playListId)
     {
         return playListService.deletePlayList(playListId);
+    }
+
+    @GetMapping("/getSongs/{songId}")
+    public ResponseEntity<?> getSongs(@PathVariable Integer songId)
+    {
+        return  songService.getSongs(songId);
     }
 
 }

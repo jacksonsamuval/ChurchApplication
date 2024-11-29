@@ -35,10 +35,11 @@ public class PlayListService {
         return new ResponseEntity<>("PlayList created successfully", HttpStatus.CREATED);
     }
 
-    public List<PlayList> getPlayListForUser(Integer userId) {
+    public ResponseEntity<List<PlayList>> getPlayListForUser(Integer userId) {
         Ulogin ulogin = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
-        return playListRepo.findByUlogin(ulogin);
+
+        return new ResponseEntity<>(playListRepo.findByUlogin(ulogin),HttpStatus.FOUND);
     }
 
     public ResponseEntity<?> addToPlayList(Integer playListId, Integer videoId) {

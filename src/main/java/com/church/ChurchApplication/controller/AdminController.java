@@ -1,6 +1,8 @@
 package com.church.ChurchApplication.controller;
 
+import com.church.ChurchApplication.entity.Songs;
 import com.church.ChurchApplication.entity.VideoStorage;
+import com.church.ChurchApplication.service.SongService;
 import com.church.ChurchApplication.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ public class AdminController {
 
     @Autowired
     private VideoService videoService;
+
+    @Autowired
+    private SongService songService;
 
     @PostMapping("/addVideo")
     public ResponseEntity<?> saveVideo(@RequestPart MultipartFile videoFile)
@@ -31,6 +36,18 @@ public class AdminController {
     public ResponseEntity<?> deleteVideo(@PathVariable Integer videoId)
     {
         return videoService.deleteVideo(videoId);
+    }
+
+    @PostMapping("/addSongs")
+    public ResponseEntity<?> addSongs(@RequestBody Songs songs)
+    {
+        return songService.addSongs(songs);
+    }
+
+    @DeleteMapping("deleteSongs/{songId}")
+    public ResponseEntity<?> deleteSongs(@PathVariable Integer songId)
+    {
+        return songService.deleteSong(songId);
     }
 
 

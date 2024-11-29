@@ -1,5 +1,6 @@
 package com.church.ChurchApplication.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class PlayList {
 
     @ManyToOne
     @JoinColumn(name = "ulogin_id",nullable = false)
+    @JsonIgnore
     private Ulogin ulogin;
 
     @ElementCollection
