@@ -1,10 +1,10 @@
 package com.church.ChurchApplication.controller;
 
-import com.church.ChurchApplication.entity.FavoriteVideo;
 import com.church.ChurchApplication.entity.PlayList;
 import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +31,12 @@ public class HomeController {
 
     @Autowired
     private SongService songService;
+
+    @Autowired
+    private FavoriteSongService favoriteSongService;
+
+    @Autowired
+    private BannerService bannerService;
 
     @GetMapping("deleteMyAccount")
     public ResponseEntity<String> deleteMyAccount(@RequestParam String email )
@@ -83,9 +89,13 @@ public class HomeController {
     }
 
     @PutMapping("addToPlayList/{playListId}")
-    public ResponseEntity<?> addToPlayList(@PathVariable Integer playListId,@RequestParam Integer videoId)
+    public ResponseEntity<?> addToPlayList(@PathVariable Integer playListId,@RequestParam(required = false) Integer videoId,@RequestParam(required = false) Integer songId)
     {
-        return playListService.addToPlayList(playListId,videoId);
+        if (videoId!=null && songId!=null)
+        {
+            return new ResponseEntity<>("Only One can be added at a time", HttpStatus.BAD_REQUEST);
+        }
+        return playListService.addToPlayList(playListId,videoId,songId);
     }
 
     @PutMapping("removeFromPlayList/{playListId}")
@@ -104,6 +114,37 @@ public class HomeController {
     public ResponseEntity<?> getSongs(@PathVariable Integer songId)
     {
         return  songService.getSongs(songId);
+    }
+
+    @PostMapping("addSongToFavorites/{songId}")
+    public ResponseEntity<?> addSongToFavorites(@PathVariable Integer songId)
+    {
+        return favoriteSongService.addToFavorites(songId);
+    }
+
+    @GetMapping("getAllFavoriteSongs")
+    public ResponseEntity<?> getAllFavoriteSongs()
+    {
+        return favoriteSongService.getAllFavoriteSongs();
+    }
+
+    @DeleteMapping("/removeSongFromFavorite/{songId}")
+    public ResponseEntity<?> removeSongFromFavorites(@PathVariable Integer songId)
+    {
+        return favoriteSongService.removeSongFromFavorites(songId);
+    }
+
+    //About Profile
+    @GetMapping("getProfileDetails")
+    public ResponseEntity<?> getAboutProfile()
+    {
+        return userService.getAboutProfile();
+    }
+
+    @GetMapping("getBanners")
+    public ResponseEntity<?> getBanners()
+    {
+        return bannerService.getBanners();
     }
 
 }

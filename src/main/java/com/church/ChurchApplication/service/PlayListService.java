@@ -1,9 +1,11 @@
 package com.church.ChurchApplication.service;
 
 import com.church.ChurchApplication.entity.PlayList;
+import com.church.ChurchApplication.entity.Songs;
 import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.entity.VideoStorage;
 import com.church.ChurchApplication.repo.PlayListRepo;
+import com.church.ChurchApplication.repo.SongsRepo;
 import com.church.ChurchApplication.repo.UserRepo;
 import com.church.ChurchApplication.repo.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class PlayListService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private SongsRepo songsRepo;
+
     public ResponseEntity<?> createPlayList(Integer userId, String playListName) {
         Ulogin user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
@@ -42,13 +47,22 @@ public class PlayListService {
         return new ResponseEntity<>(playListRepo.findByUlogin(ulogin),HttpStatus.FOUND);
     }
 
-    public ResponseEntity<?> addToPlayList(Integer playListId, Integer videoId) {
+    public ResponseEntity<?> addToPlayList(Integer playListId, Integer videoId, Integer songId) {
         try {
             PlayList playList = playListRepo.findById(playListId)
                     .orElseThrow(() -> new RuntimeException("PlayList Not Found"));
-            VideoStorage videoStorage = videoRepository.findById(videoId)
-                    .orElseThrow(() -> new RuntimeException("Video Not Found"));
-            playList.getVideoStorageList().add(videoStorage);
+            if (videoId !=null)
+            {
+                VideoStorage videoStorage = videoRepository.findById(videoId)
+                        .orElseThrow(() -> new RuntimeException("Video Not Found"));
+                playList.getVideoStorageList().add(videoStorage);
+            }
+            if (songId!=null)
+            {
+                Songs songs = songsRepo.findById(songId)
+                        .orElseThrow(() -> new RuntimeException("Song Not Found"));
+                playList.getSongsList().add(songs);
+            }
             playListRepo.save(playList);
             return new ResponseEntity<>("Successfully Added", HttpStatus.OK);
         } catch (Exception e) {

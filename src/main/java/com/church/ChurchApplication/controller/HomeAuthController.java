@@ -22,7 +22,9 @@ import com.church.ChurchApplication.repo.*;
 import com.church.ChurchApplication.entity.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -50,6 +52,9 @@ public class HomeAuthController {
 
 	@Autowired
 	private UserProfileService userProfileService;
+
+	@Autowired
+	private ProfilePictureRepo profilePictureRepo;
 
 	//test mappings
 	
@@ -81,14 +86,33 @@ public class HomeAuthController {
 	}
 	
 	@PostMapping("login")
-	public ResponseEntity<String> login(@RequestBody UsersLogin user)
+	public ResponseEntity<?> login(@RequestBody UsersLogin user)
 	{	
 		try
 		{
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(user.getEmailOrUsername(),user.getPassword()));
 			if(authentication.isAuthenticated()) {
-				return new ResponseEntity<>(jwtService.generateToken(user.getEmailOrUsername()), HttpStatus.OK);
+
+				String email = user.getEmailOrUsername();
+				Ulogin userService1 = userService.findUserByEmail(email);
+
+				Details details = new Details();
+				details.setUserId(userService1.getId());
+				details.setUserName(userService1.getUsername());
+				details.setEmail(email);
+				details.setRole(userService1.getRole());
+				details.setMobileNo( userService1.getMobileNo());
+				details.setName(userService1.getName());
+
+				String token = jwtService.generateToken(user.getEmailOrUsername());
+				//To Get Complete User Details
+//				AboutUser aboutUser = userService.getCompleteUserDetails(user.getEmailOrUsername());
+				Map<String,Object> response = new HashMap<>();
+				response.put("Token",token);
+				response.put("Details",details);
+
+				return new ResponseEntity<>(response, HttpStatus.OK);
 			}else {
 				return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
 			}

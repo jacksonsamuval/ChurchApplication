@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,19 +29,21 @@ public class FavoriteVideoService {
     @Transactional
     public ResponseEntity<?> addToFavorites(Integer videoId) {
         Ulogin user = userService.getCurrentUser();
-        VideoStorage videoStorage = videoRepository.findById(videoId)
-                .orElseThrow(() -> new RuntimeException("Video Not Found"));
 
-        if (favoriteVideoRepo.findFavoriteVideoAndUser(user, videoStorage).isPresent()) {
-            return new ResponseEntity<>("Video is already in favorites", HttpStatus.CONFLICT);
-        }
+            VideoStorage videoStorage = videoRepository.findById(videoId)
+                    .orElseThrow(() -> new RuntimeException("Video Not Found"));
 
-        FavoriteVideo favoriteVideo = new FavoriteVideo();
-        favoriteVideo.setVideoStorage(videoStorage);
-        favoriteVideo.setUlogin(user);
-        favoriteVideoRepo.save(favoriteVideo);
+            if (favoriteVideoRepo.findFavoriteVideoAndUser(user, videoStorage).isPresent()) {
+                return new ResponseEntity<>("Video is already in favorites", HttpStatus.CONFLICT);
+            }
 
-        return new ResponseEntity<>("Video Added Successfully", HttpStatus.CREATED);
+            FavoriteVideo favoriteVideo = new FavoriteVideo();
+            favoriteVideo.setVideoStorage(videoStorage);
+            favoriteVideo.setUlogin(user);
+            favoriteVideoRepo.save(favoriteVideo);
+
+            return new ResponseEntity<>("Video Added Successfully", HttpStatus.CREATED);
+
     }
 
     @Transactional
@@ -55,7 +56,7 @@ public class FavoriteVideoService {
             Ulogin user = userService.getCurrentUser();
 
             FavoriteVideo favoriteVideo = favoriteVideoRepo.findFavoriteVideoAndUser(user,videoStorage)
-                    .orElseThrow(()-> new RuntimeException("Video Is Not In Your Favorites"));
+                    .orElseThrow(()-> new RuntimeException("Video Is Not In Your FavoriteVideo"));
             favoriteVideoRepo.delete(favoriteVideo);
             return new ResponseEntity<>("Removed Successfully",HttpStatus.OK);
         }catch (Exception e)
@@ -78,7 +79,7 @@ public class FavoriteVideoService {
 
             if(favoriteVideos.isEmpty())
             {
-                return new ResponseEntity<>("No Videos In Favorites",HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("No Videos In FavoriteVideo",HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(favoriteVideos,HttpStatus.OK);
 

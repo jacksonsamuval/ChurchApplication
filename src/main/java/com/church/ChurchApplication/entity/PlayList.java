@@ -23,6 +23,17 @@ public class PlayList {
     @ElementCollection
     private List<VideoStorage> videoStorageList = new ArrayList<>();
 
+    @ElementCollection
+    private List<Songs> songsList =new ArrayList<>();
+
+    public List<Songs> getSongsList() {
+        return songsList;
+    }
+
+    public void setSongsList(List<Songs> songsList) {
+        this.songsList = songsList;
+    }
+
     public Integer getId() {
         return id;
     }

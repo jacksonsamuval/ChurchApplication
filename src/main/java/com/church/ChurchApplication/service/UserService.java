@@ -1,24 +1,19 @@
 package com.church.ChurchApplication.service;
 
+import java.util.List;
 import java.util.Optional;
 
-import com.church.ChurchApplication.dto.GetUserDetails;
+import com.church.ChurchApplication.dto.*;
 import com.church.ChurchApplication.emailService.EmailService;
 import com.church.ChurchApplication.emailService.OtpService;
-import com.church.ChurchApplication.entity.UserPrincipal;
+import com.church.ChurchApplication.entity.*;
+import com.church.ChurchApplication.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.church.ChurchApplication.dto.PasswordResetRequest;
-import com.church.ChurchApplication.dto.ResetPasswordRequest;
-import com.church.ChurchApplication.dto.VerificationRequest;
-import com.church.ChurchApplication.entity.PasswordResetToken;
-import com.church.ChurchApplication.entity.Ulogin;
-import com.church.ChurchApplication.repo.PasswordResetTokenRepository;
-import com.church.ChurchApplication.repo.UserRepo;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -34,6 +29,18 @@ public class UserService {
 
 	@Autowired
 	private PasswordResetTokenRepository passwordResetTokenRepository;
+
+	@Autowired
+	private FavoriteSongsRepo favoriteSongsRepo;
+
+	@Autowired
+	private FavoriteVideoRepo favoriteVideoRepo;
+
+	@Autowired
+	private PlayListRepo playListRepo;
+
+	@Autowired
+	private UserRepo userRepo;
 
 
 public ResponseEntity<String> saveUser(Ulogin user)
@@ -144,5 +151,57 @@ public ResponseEntity<String> saveUser(Ulogin user)
 	public Ulogin getCurrentUser() {
 		UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return userPrincipal.getUser();
+	}
+
+	public ResponseEntity<?> getAboutProfile() {
+		try {
+			Ulogin ulogin = getCurrentUser();
+
+			if (ulogin == null) {
+				return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+			}
+
+			List<PlayList> playList = playListRepo.findByUlogin(ulogin);
+			List<FavoriteSong> favoriteSong = favoriteSongsRepo.findByUlogin(ulogin);
+			List<FavoriteVideo> favoriteVideos = favoriteVideoRepo.findByUlogin(ulogin);
+
+			AboutUser aboutUser = new AboutUser();
+			aboutUser.setUserName(ulogin.getUsername());
+			aboutUser.setUserId(ulogin.getId());
+			aboutUser.setEmail(ulogin.getEmail());
+			aboutUser.setMobileNo(ulogin.getMobileNo());
+			aboutUser.setRole(ulogin.getRole());
+			aboutUser.setProfilePicture(ulogin.getProfilePicture());
+			aboutUser.setPlayList(playList);
+			aboutUser.setFavoriteSongs(favoriteSong);
+			aboutUser.setFavoriteVideos(favoriteVideos);
+
+			return new ResponseEntity<>(aboutUser, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Something went wrong while fetching the profile", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public AboutUser getCompleteUserDetails(String email)
+	{
+			Ulogin ulogin = userRepo.findUserByEmail(email);
+
+			List<PlayList> playList = playListRepo.findByUlogin(ulogin);
+			List<FavoriteSong> favoriteSong = favoriteSongsRepo.findByUlogin(ulogin);
+			List<FavoriteVideo> favoriteVideos = favoriteVideoRepo.findByUlogin(ulogin);
+
+			AboutUser aboutUser = new AboutUser();
+			aboutUser.setUserName(ulogin.getUsername());
+			aboutUser.setUserId(ulogin.getId());
+			aboutUser.setEmail(ulogin.getEmail());
+			aboutUser.setMobileNo(ulogin.getMobileNo());
+			aboutUser.setRole(ulogin.getRole());
+			aboutUser.setProfilePicture(ulogin.getProfilePicture());
+			aboutUser.setPlayList(playList);
+			aboutUser.setFavoriteSongs(favoriteSong);
+			aboutUser.setFavoriteVideos(favoriteVideos);
+
+			return aboutUser;
 	}
 }

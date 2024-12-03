@@ -1,7 +1,9 @@
 package com.church.ChurchApplication.controller;
 
 import com.church.ChurchApplication.entity.Songs;
+import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.entity.VideoStorage;
+import com.church.ChurchApplication.service.BannerService;
 import com.church.ChurchApplication.service.SongService;
 import com.church.ChurchApplication.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,14 @@ public class AdminController {
     @Autowired
     private SongService songService;
 
+    @Autowired
+    private BannerService bannerService;
+
     @PostMapping("/addVideo")
-    public ResponseEntity<?> saveVideo(@RequestPart MultipartFile videoFile)
+    public ResponseEntity<?> saveVideo(@RequestBody VideoStorage videoStorage )
     {
         try{
-            VideoStorage video = videoService.saveVideo(videoFile);
+            VideoStorage video = videoService.saveVideo(videoStorage);
             return new ResponseEntity<>(video, HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -50,5 +55,34 @@ public class AdminController {
         return songService.deleteSong(songId);
     }
 
+    @PostMapping("addBanners")
+    public ResponseEntity<?> addBannersToDb( @RequestPart MultipartFile imageFile) {
+        try {
+            return bannerService.saveBanner(imageFile);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    @DeleteMapping("removeBanners/{bannerId}")
+    public ResponseEntity<?> removeBanner(@PathVariable Integer bannerId) {
+        try {
+            return bannerService.deleteBanner(bannerId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
+
+//Save Video to Db
+
+//    @PostMapping("/addVideo")
+//    public ResponseEntity<?> saveVideo(@RequestPart MultipartFile videoFile)
+//    {
+//        try{
+//            VideoStorage video = videoService.saveVideo(videoFile);
+//            return new ResponseEntity<>(video, HttpStatus.CREATED);
+//        }catch (Exception e){
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
