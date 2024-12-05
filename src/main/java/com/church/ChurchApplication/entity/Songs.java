@@ -1,7 +1,10 @@
 package com.church.ChurchApplication.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.w3c.dom.Text;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Songs {
@@ -15,6 +18,17 @@ public class Songs {
     @Lob
     @Column(columnDefinition = "Text")
     private String song;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public Integer getId() {
         return id;

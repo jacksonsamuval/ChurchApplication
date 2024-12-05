@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface BannersRepo extends JpaRepository<Banners,Integer> {
     List<Banners> findTop4ByOrderByCreatedAtDesc();
+
+    Banners findTopByOrderByCreatedAtAsc();
 }

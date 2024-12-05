@@ -23,6 +23,12 @@ public class BannerService {
     public ResponseEntity<?> saveBanner(MultipartFile imageFile) throws IOException {
         try
         {
+            if(bannersRepo.count()>=4)
+            {
+                Banners oldestBanner = bannersRepo.findTopByOrderByCreatedAtAsc();
+                bannersRepo.delete(oldestBanner);
+            }
+
             Banners banners = new Banners();
             banners.setBannerName(imageFile.getOriginalFilename());
             banners.setBannerType(imageFile.getContentType());
@@ -40,7 +46,7 @@ public class BannerService {
     public ResponseEntity<?> deleteBanner(Integer bannerId) {
         Banners banners = bannersRepo.findById(bannerId).orElseThrow(()->
                 new RuntimeException("Banner Not Availaible"));
-        bannersRepo.delete(banners);
+
         return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
 
     }

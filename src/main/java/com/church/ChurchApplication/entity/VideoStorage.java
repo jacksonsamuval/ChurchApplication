@@ -1,7 +1,10 @@
 package com.church.ChurchApplication.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class VideoStorage {
@@ -13,6 +16,17 @@ public class VideoStorage {
     @Column(columnDefinition = "Text")
     private String videoDescription;
     private String url;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public Integer getId() {
         return id;
