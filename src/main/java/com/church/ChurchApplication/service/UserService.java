@@ -1,5 +1,6 @@
 package com.church.ChurchApplication.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -204,4 +205,23 @@ public ResponseEntity<String> saveUser(Ulogin user)
 
 			return aboutUser;
 	}
+
+    public ResponseEntity<?> greetingsToUser() {
+        Ulogin ulogin = getCurrentUser();
+        String name = ulogin.getName();
+        String greetings;
+        LocalTime now =LocalTime.now();
+
+        if (now.isBefore(LocalTime.NOON))
+        {
+            greetings = "Good Morning";
+        } else if (now.isBefore(LocalTime.of(18,0))) {
+            greetings = "Good Afternoon";
+        }else {
+            greetings = "Good Night";
+        }
+        String capitalizedName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        String greet = greetings + " " + capitalizedName + "!";
+        return new ResponseEntity<>(greet,HttpStatus.OK);
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -46,6 +47,10 @@ public class VideoService {
     }
 
 
+    public ResponseEntity<?> getRecentVideos() {
+        List<VideoStorage> videoStorageList = videoRepository.findTop5ByOrderByCreatedAtDesc();
+        return new ResponseEntity<>(videoStorageList,HttpStatus.OK);
+    }
 }
 
 //Save Video Directly to db

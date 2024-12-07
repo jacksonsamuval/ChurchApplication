@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -37,6 +38,13 @@ public class HomeController {
 
     @Autowired
     private BannerService bannerService;
+
+    @GetMapping("greet")
+    public ResponseEntity<?> greetingToUser()
+    {
+        return userService.greetingsToUser();
+    }
+
 
     @GetMapping("deleteMyAccount")
     public ResponseEntity<String> deleteMyAccount(@RequestParam String email )
@@ -132,6 +140,12 @@ public class HomeController {
     public ResponseEntity<?> removeSongFromFavorites(@PathVariable Integer songId)
     {
         return favoriteSongService.removeSongFromFavorites(songId);
+    }
+
+    @GetMapping("/getRecentVideos")
+    public ResponseEntity<?> getRecentVideos()
+    {
+        return videoService.getRecentVideos();
     }
 
     //About Profile
