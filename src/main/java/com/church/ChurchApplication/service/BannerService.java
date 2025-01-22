@@ -44,15 +44,30 @@ public class BannerService {
     }
 
     public ResponseEntity<?> deleteBanner(Integer bannerId) {
-        Banners banners = bannersRepo.findById(bannerId).orElseThrow(()->
-                new RuntimeException("Banner Not Availaible"));
+        try{
+            Banners banners = bannersRepo.findById(bannerId).orElseThrow(()->
+                    new RuntimeException("Banner Not Availaible"));
+            bannersRepo.delete(banners);
+            return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
+        } catch (Exception e ){
+            return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
 
     }
 
     public ResponseEntity<?> getBanners() {
         List<Banners> banners = bannersRepo.findTop4ByOrderByCreatedAtDesc();
         return new ResponseEntity<>(banners,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getALLBanners() {
+        try {
+            List<Banners> banners = bannersRepo.findAll();
+            return new ResponseEntity<>(banners,HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

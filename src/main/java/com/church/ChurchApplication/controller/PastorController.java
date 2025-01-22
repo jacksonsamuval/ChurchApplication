@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/home/pastor/")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PastorController {
 
     @Autowired

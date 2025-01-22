@@ -30,6 +30,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth/")
+@CrossOrigin(origins = "http://localhost:5173")
 public class HomeAuthController {
 	
 	@Autowired
@@ -106,8 +107,7 @@ public class HomeAuthController {
 				details.setName(userService1.getName());
 
 				String token = jwtService.generateToken(user.getEmailOrUsername());
-				//To Get Complete User Details
-//				AboutUser aboutUser = userService.getCompleteUserDetails(user.getEmailOrUsername());
+
 				Map<String,Object> response = new HashMap<>();
 				response.put("Token",token);
 				response.put("Details",details);

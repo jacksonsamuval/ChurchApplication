@@ -16,54 +16,68 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig 
-{
+public class SecurityConfig {
+
 	@Autowired
 	private UserDetailsService detailsService;
-	
+
 	@Autowired
 	private JwtFilter jwtFilter;
-	
+
 	@Bean
-	public AuthenticationProvider authenticationProvider()
-	{
+	public AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setUserDetailsService(detailsService);
 		provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 		return provider;
 	}
-	
+
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-	{
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.csrf(customizer -> customizer.disable())
+				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(request -> request
-						.requestMatchers("signup", "auth/login","/auth/login", "auth/resetPassword","/auth/resetPassword","auth/register","/auth/register","auth/forgotPassword","auth/home","auth/hello","verifyOtp","/verifyOtp",
-								"/updatePassword","/validate","validate","auth/otpVerification","/auth/otpVerification","/auth/resendOtp","auth/resendOtp","home/pastor/addPastorId").permitAll().anyRequest().authenticated())
+						.requestMatchers(
+								"signup", "auth/login", "/auth/login", "auth/resetPassword", "/auth/resetPassword",
+								"auth/register", "/auth/register", "auth/forgotPassword", "auth/home", "auth/hello",
+								"verifyOtp", "/verifyOtp", "/updatePassword", "/validate", "validate",
+								"auth/otpVerification", "/auth/otpVerification", "/auth/resendOtp", "auth/resendOtp",
+								"home/pastor/addPastorId"
+						).permitAll()
+						.anyRequest().authenticated()
+				)
 				.httpBasic(Customizer.withDefaults())
-				.sessionManagement(session -> 
-							session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-		
+				.sessionManagement(session ->
+						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+				.cors(Customizer.withDefaults()); // Enable CORS with the configured source
+
 		return http.build();
 	}
-	
+
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception
-	{
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-	
-//	    @Override
-//	    public void addCorsMappings(CorsRegistry registry) {
-//	        registry.addMapping("/**") 
-//	                .allowedOrigins("http://localhost:5173/") 
-//	                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//	                .allowedHeaders("*")
-//	                .allowCredentials(true); 
-//	    }
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("http://localhost:5173")); // No trailing slash
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+		configuration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 }

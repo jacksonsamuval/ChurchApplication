@@ -51,6 +51,31 @@ public class VideoService {
         List<VideoStorage> videoStorageList = videoRepository.findTop5ByOrderByCreatedAtDesc();
         return new ResponseEntity<>(videoStorageList,HttpStatus.OK);
     }
+
+    public ResponseEntity<?> getAllVideo() {
+        try{
+            List<VideoStorage> videos = videoRepository.findAll();
+            return new ResponseEntity<>(videos,HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("server Error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    public ResponseEntity<?> editVideo(Integer videoId, String videoName, String videoDescription, String videoUrl) {
+        try{
+            VideoStorage videoStorage = videoRepository.findById(videoId).orElseThrow(()-> new RuntimeException("Not Found"));
+            if(videoStorage!=null){
+                videoStorage.setUrl(videoUrl);
+                videoStorage.setVideoDescription(videoDescription);
+                videoStorage.setVideoName(videoName);
+                videoRepository.save(videoStorage);
+            }
+            return new ResponseEntity<>(videoStorage,HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 
 //Save Video Directly to db

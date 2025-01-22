@@ -1,5 +1,6 @@
 package com.church.ChurchApplication.controller;
 
+import com.church.ChurchApplication.dto.Video;
 import com.church.ChurchApplication.entity.Songs;
 import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.entity.VideoStorage;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("admin")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AdminController {
 
     @Autowired
@@ -37,6 +39,12 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/getAllVideos")
+    public ResponseEntity<?> getAllVideo(){
+        return videoService.getAllVideo();
+    }
+
+
     @PostMapping("/deleteVideo/{videoId}")
     public ResponseEntity<?> deleteVideo(@PathVariable Integer videoId)
     {
@@ -56,12 +64,17 @@ public class AdminController {
     }
 
     @PostMapping("addBanners")
-    public ResponseEntity<?> addBannersToDb( @RequestPart MultipartFile imageFile) {
+    public ResponseEntity<?> addBannersToDb( @RequestPart("image") MultipartFile image) {
         try {
-            return bannerService.saveBanner(imageFile);
+            return bannerService.saveBanner(image);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/viewBanners")
+    public ResponseEntity<?> viewAllBanners(){
+        return bannerService.getALLBanners();
     }
 
     @DeleteMapping("removeBanners/{bannerId}")
@@ -71,6 +84,11 @@ public class AdminController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PutMapping("editVideo/{videoId}")
+    public ResponseEntity<?> editVideo(@PathVariable Integer videoId, @RequestBody Video updatedVideo){
+        return videoService.editVideo(videoId,updatedVideo.getVideoName(),updatedVideo.getVideoDescription(),updatedVideo.getVideoUrl());
     }
 }
 
