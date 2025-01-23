@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,5 +43,27 @@ public class SongService {
         }
         songsRepo.deleteById(songId);
         return new ResponseEntity<>("Success",HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAllSongs() {
+        try{
+            List<Songs> song = songsRepo.findAll();
+            return new ResponseEntity<>(song,HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> editSongs(Integer songId, Songs songs) {
+        try {
+            Songs song = songsRepo.findById(songId).orElseThrow(()-> new RuntimeException("Not Found"));
+            song.setSongName(songs.getSongName());
+            song.setSongType(songs.getSongType());
+            song.setSong(song.getSong());
+            songsRepo.save(song);
+            return new ResponseEntity<>(song,HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -57,10 +57,20 @@ public class AdminController {
         return songService.addSongs(songs);
     }
 
-    @DeleteMapping("deleteSongs/{songId}")
-    public ResponseEntity<?> deleteSongs(@PathVariable Integer songId)
+    @GetMapping("/getAllSongs")
+    public ResponseEntity<?> getAllSongs(){
+        return songService.getAllSongs();
+    }
+
+    @PutMapping("/editSongs/{id}")
+    public ResponseEntity<?> editSongs(@PathVariable Integer id,@RequestBody Songs songs){
+        return songService.editSongs(id,songs);
+    }
+
+    @DeleteMapping("deleteSongs/{id}")
+    public ResponseEntity<?> deleteSongs(@PathVariable Integer id)
     {
-        return songService.deleteSong(songId);
+        return songService.deleteSong(id);
     }
 
     @PostMapping("addBanners")
@@ -91,16 +101,3 @@ public class AdminController {
         return videoService.editVideo(videoId,updatedVideo.getVideoName(),updatedVideo.getVideoDescription(),updatedVideo.getVideoUrl());
     }
 }
-
-//Save Video to Db
-
-//    @PostMapping("/addVideo")
-//    public ResponseEntity<?> saveVideo(@RequestPart MultipartFile videoFile)
-//    {
-//        try{
-//            VideoStorage video = videoService.saveVideo(videoFile);
-//            return new ResponseEntity<>(video, HttpStatus.CREATED);
-//        }catch (Exception e){
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
