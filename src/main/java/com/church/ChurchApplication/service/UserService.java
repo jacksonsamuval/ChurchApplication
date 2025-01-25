@@ -224,4 +224,25 @@ public ResponseEntity<String> saveUser(Ulogin user)
         String greet = greetings + " " + capitalizedName + "!";
         return new ResponseEntity<>(greet,HttpStatus.OK);
     }
+
+    public ResponseEntity<?> getAllUser() {
+		String role = "USER";
+		try{
+			List<Ulogin> ulogin = userRepo.findByRole(role);
+			return new ResponseEntity<>(ulogin,HttpStatus.OK);
+		} catch (Exception e ){
+			return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+    }
+
+	public ResponseEntity<?> getAllPastors() {
+		try{
+			String role = "PASTOR";
+			List<Ulogin> ulogins = userRepo.findByRole(role);
+			return ResponseEntity.ok(ulogins);
+		} catch (Exception e) {
+			return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

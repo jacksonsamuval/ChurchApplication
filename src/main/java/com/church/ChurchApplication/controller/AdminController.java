@@ -4,9 +4,7 @@ import com.church.ChurchApplication.dto.Video;
 import com.church.ChurchApplication.entity.Songs;
 import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.entity.VideoStorage;
-import com.church.ChurchApplication.service.BannerService;
-import com.church.ChurchApplication.service.SongService;
-import com.church.ChurchApplication.service.VideoService;
+import com.church.ChurchApplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -16,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("admin")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AdminController {
 
     @Autowired
@@ -27,6 +24,12 @@ public class AdminController {
 
     @Autowired
     private BannerService bannerService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PastorService pastorService;
 
     @PostMapping("/addVideo")
     public ResponseEntity<?> saveVideo(@RequestBody VideoStorage videoStorage )
@@ -67,6 +70,12 @@ public class AdminController {
         return songService.editSongs(id,songs);
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> getUser()
+    {
+        return userService.getAllUser();
+    }
+
     @DeleteMapping("deleteSongs/{id}")
     public ResponseEntity<?> deleteSongs(@PathVariable Integer id)
     {
@@ -99,5 +108,15 @@ public class AdminController {
     @PutMapping("editVideo/{videoId}")
     public ResponseEntity<?> editVideo(@PathVariable Integer videoId, @RequestBody Video updatedVideo){
         return videoService.editVideo(videoId,updatedVideo.getVideoName(),updatedVideo.getVideoDescription(),updatedVideo.getVideoUrl());
+    }
+
+    @GetMapping("viewAllPastors")
+    public ResponseEntity<?> viewAllPastors(){
+        return userService.getAllPastors();
+    }
+
+    @DeleteMapping("deleteId/{id}")
+    public ResponseEntity<?> deletePastorId(@PathVariable Integer id){
+        return pastorService.deleteId(id);
     }
 }

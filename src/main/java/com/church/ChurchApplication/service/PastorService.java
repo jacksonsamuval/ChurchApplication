@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -54,5 +55,32 @@ public class PastorService {
         }
         pastorIdRepo.save(pastorId);
         return new ResponseEntity<>("Success: Pastor ID added", HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getPastorId() {
+        try{
+            List<PastorId> pastorIds = pastorIdRepo.findAll();
+            return ResponseEntity.ok(pastorIds);
+        } catch (Exception e){
+            return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> deleteId(Integer id) {
+        try{
+            PastorId pastorId = pastorIdRepo.findById(id).orElseThrow(()-> new RuntimeException("Not Found"));
+            if (pastorId == null){
+                return new ResponseEntity<>("Not Found",HttpStatus.NOT_FOUND);
+            } else {
+                if (pastorId.isVerifiedPastor()){
+                    return new ResponseEntity<>("Verified Pastor",HttpStatus.CONFLICT);
+                } else {
+                    pastorIdRepo.delete(pastorId);
+                    return new ResponseEntity<>(pastorId,HttpStatus.OK);
+                }
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
