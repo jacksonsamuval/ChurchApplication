@@ -11,4 +11,6 @@ public interface BannersRepo extends JpaRepository<Banners,Integer> {
     List<Banners> findTop4ByOrderByCreatedAtDesc();
 
     Banners findTopByOrderByCreatedAtAsc();
+
+    List<Banners> findTop5ByOrderByCreatedAtDesc();
 }

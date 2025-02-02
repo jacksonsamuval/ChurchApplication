@@ -1,17 +1,25 @@
 package com.church.ChurchApplication.service;
 
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.church.ChurchApplication.dto.*;
 import com.church.ChurchApplication.emailService.EmailService;
 import com.church.ChurchApplication.emailService.OtpService;
 import com.church.ChurchApplication.entity.*;
+import com.church.ChurchApplication.jwtService.JwtService;
 import com.church.ChurchApplication.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +35,10 @@ public class UserService {
 
 	@Autowired
 	private EmailService emailService;
+	@Autowired
+	private JwtService jwtService;
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
 	@Autowired
 	private PasswordResetTokenRepository passwordResetTokenRepository;
@@ -44,29 +56,34 @@ public class UserService {
 	private UserRepo userRepo;
 
 
-public ResponseEntity<String> saveUser(Ulogin user)
-	{
+public ResponseEntity<?> saveUser(Ulogin user)
+{
+	try{
 		if(user==null || user.getEmail()==null)
 		{
-			return new ResponseEntity<>("Invalid User Details",HttpStatus.BAD_REQUEST);
+			return ResponseEntity.status(401).body("error");
 		}
-		
-		 if (repo.findByEmail(user.getEmail()).isPresent()) 
-		 {
-			 return new ResponseEntity<>("Email Exists",HttpStatus.BAD_REQUEST);
-		 }
-		 else if(repo.findUserByUsername(user.getUsername()).isPresent())
-		 {
-			 return new ResponseEntity<>("Username Already Exists",HttpStatus.BAD_REQUEST);
-		 }
-		 else
-		 {
-			 repo.save(user);
-			 return new ResponseEntity<>("Success",HttpStatus.OK);
-		 }
-		
-		
+		if (repo.findByEmail(user.getEmail()).isPresent())
+		{
+			return ResponseEntity.status(402).body("error");
+		}
+		if(repo.findByMobileNo(user.getMobileNo()).isPresent())
+		{
+			return ResponseEntity.status(405).body("error");
+		}
+		else if(repo.findUserByUsername(user.getUsername()).isPresent())
+		{
+			return  ResponseEntity.status(403).body("error");
+		}
+		else
+		{
+			repo.save(user);
+			return new ResponseEntity<>("Success",HttpStatus.OK);
+		}
+	} catch (Exception e){
+		return ResponseEntity.status(404).body("network error");
 	}
+}
 	
 	@Transactional
 	public Ulogin findUserByEmail(String email)
@@ -75,23 +92,27 @@ public ResponseEntity<String> saveUser(Ulogin user)
 	}
 
 	public ResponseEntity<String> otpVerified(VerificationRequest verificationRequest) {
-		
-		String email = verificationRequest.getEmail();
-		String otp = verificationRequest.getOtp();
-		
-		Optional<PasswordResetToken> tokenOtp = passwordResetTokenRepository.findByEmailAndOtp(email,otp);
-		if (tokenOtp.isPresent()) {
-		    if (tokenOtp.get().isExpired()) {
-		        return new ResponseEntity<>("Otp Expired", HttpStatus.UNAUTHORIZED);
-		    }
-		    if (!tokenOtp.get().getOtp().equals(otp)) {
-		        return new ResponseEntity<>("Otp Not Valid", HttpStatus.FORBIDDEN);
-		    }
-		    passwordResetTokenRepository.delete(tokenOtp.get());
-		    return new ResponseEntity<>("Otp Successfully verified", HttpStatus.OK);
-		} else {
-		    return new ResponseEntity<>("Otp Not Valid", HttpStatus.NOT_FOUND);
+		try{
+			String email = verificationRequest.getEmail();
+			String otp = verificationRequest.getOtp();
+
+			Optional<PasswordResetToken> tokenOtp = passwordResetTokenRepository.findByEmailAndOtp(email,otp);
+			if (tokenOtp.isPresent()) {
+				if (tokenOtp.get().isExpired()) {
+					return ResponseEntity.status(401).body("expired");
+				}
+				if (!tokenOtp.get().getOtp().equals(otp)) {
+					return ResponseEntity.status(402).body("invalid");
+				}
+				passwordResetTokenRepository.delete(tokenOtp.get());
+				return new ResponseEntity<>("Otp Successfully verified", HttpStatus.OK);
+			} else {
+				return ResponseEntity.status(403).body("timeup");
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(404).body("Network error");
 		}
+
 
 	}
 
@@ -115,19 +136,21 @@ public ResponseEntity<String> saveUser(Ulogin user)
 	}
 
 	public ResponseEntity<String> resetPassword(ResetPasswordRequest request) {
-		String email = request.getEmail();
-	    String newPassword = request.getNewPassword();
+		try{
+			String email = request.getEmail();
+			String newPassword = request.getNewPassword();
 
-	    Ulogin user = repo.findUserByEmail(email);
-	    
-	    if (user == null) {
-	        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-	    }
-	    user.setPassword(newPassword);
-	    
-	    repo.save(user);
+			Ulogin user = repo.findUserByEmail(email);
+			if (user == null) {
+				return ResponseEntity.status(401).body("user not found");
+			}
+			user.setPassword(newPassword);
+			repo.save(user);
+			return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(402).body("Network error");
+		}
 
-	    return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
 	}
 
 	public boolean existsByEmail(String email) {
@@ -243,6 +266,28 @@ public ResponseEntity<String> saveUser(Ulogin user)
 			return ResponseEntity.ok(ulogins);
 		} catch (Exception e) {
 			return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<String> forgetPassword(PasswordResetRequest passwordResetRequest) {
+		try{
+			String email = passwordResetRequest.getEmail();
+			String otp = otpService.generateOtp();
+			Optional<PasswordResetToken> resetToken = passwordResetTokenRepository.findByEmail(email);
+			if(resetToken.isPresent())
+			{
+				passwordResetTokenRepository.delete(resetToken.get());
+			}
+			if (!existsByEmail(email)) {
+				return ResponseEntity.status(401).body("error");
+			}
+
+			otpService.saveOtp(email,otp);
+			emailService.sendOtpEmail(email,otp);
+
+			return new ResponseEntity<>("OTP sent to email", HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(402).body("network error");
 		}
 	}
 }

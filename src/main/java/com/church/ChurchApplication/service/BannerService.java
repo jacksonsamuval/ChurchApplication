@@ -23,7 +23,7 @@ public class BannerService {
     public ResponseEntity<?> saveBanner(MultipartFile imageFile) throws IOException {
         try
         {
-            if(bannersRepo.count()>=4)
+            if(bannersRepo.count()>=5)
             {
                 Banners oldestBanner = bannersRepo.findTopByOrderByCreatedAtAsc();
                 bannersRepo.delete(oldestBanner);
@@ -57,8 +57,12 @@ public class BannerService {
     }
 
     public ResponseEntity<?> getBanners() {
-        List<Banners> banners = bannersRepo.findTop4ByOrderByCreatedAtDesc();
-        return new ResponseEntity<>(banners,HttpStatus.OK);
+        try{
+            List<Banners> banners = bannersRepo.findTop5ByOrderByCreatedAtDesc();
+            return new ResponseEntity<>(banners,HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("network error");
+        }
     }
 
     public ResponseEntity<?> getALLBanners() {

@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -36,9 +37,6 @@ public class HomeAuthController {
 	private UserService userService;
 	
 	@Autowired
-	private JwtService jwtService;
-	
-	@Autowired
 	private OtpService otpService;
 	
 	@Autowired
@@ -46,15 +44,17 @@ public class HomeAuthController {
 	
 	@Autowired
 	private PasswordResetTokenRepository passwordResetTokenRepository;
-	
-	@Autowired
-	private AuthenticationManager authenticationManager;
 
 	@Autowired
 	private UserProfileService userProfileService;
 
 	@Autowired
 	private ProfilePictureRepo profilePictureRepo;
+
+	@Autowired
+	private JwtService jwtService;
+	@Autowired
+	AuthenticationManager authenticationManager;
 
 	//test mappings
 	
@@ -80,19 +80,18 @@ public class HomeAuthController {
 	 //Required Mappings
 	 
 	@PostMapping("register")
-	public ResponseEntity<String> login(@RequestBody Ulogin ulogin)
+	public ResponseEntity<?> register(@RequestBody Ulogin ulogin)
 	{
 		return userService.saveUser(ulogin);
 	}
 	
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody UsersLogin user)
-	{	
-		try
-		{
+	{
+		try {
 			Authentication authentication = authenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(user.getEmailOrUsername(),user.getPassword()));
-			if(authentication.isAuthenticated()) {
+					.authenticate(new UsernamePasswordAuthenticationToken(user.getEmailOrUsername(), user.getPassword()));
+			if (authentication.isAuthenticated()) {
 
 				String email = user.getEmailOrUsername();
 				Ulogin userService1 = userService.findUserByEmail(email);
@@ -102,49 +101,32 @@ public class HomeAuthController {
 				details.setUserName(userService1.getUsername());
 				details.setEmail(email);
 				details.setRole(userService1.getRole());
-				details.setMobileNo( userService1.getMobileNo());
+				details.setMobileNo(userService1.getMobileNo());
 				details.setName(userService1.getName());
 
 				String token = jwtService.generateToken(user.getEmailOrUsername());
 
-				Map<String,Object> response = new HashMap<>();
-				response.put("Token",token);
-				response.put("Details",details);
+				Map<String, Object> response = new HashMap<>();
+				response.put("Token", token);
+				response.put("Details", details);
 
 				return new ResponseEntity<>(response, HttpStatus.OK);
-			}else {
-				return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+			} else {
+				return ResponseEntity.status(401).body("error");
 			}
-		}
-		catch (BadCredentialsException e) {
-			return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
-		} catch (AuthenticationException e) {
-			return new ResponseEntity<>("Authentication failed", HttpStatus.UNAUTHORIZED);
+		} catch (BadCredentialsException e) {
+			return ResponseEntity.status(401).body("Invalid email/username or password");
+		} catch (DisabledException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User account is disabled");
 		} catch (Exception e) {
-			return new ResponseEntity<>("Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(403).body("error");
 		}
 	}
 	
 	@PostMapping("forgotPassword")
 	public ResponseEntity<String> forgetPassword(@RequestBody PasswordResetRequest passwordResetRequest)
 	{
-		String email = passwordResetRequest.getEmail();
-		String otp = otpService.generateOtp();
-		Optional<PasswordResetToken> resetToken = passwordResetTokenRepository.findByEmail(email);
-		if(resetToken.isPresent())
-		{
-			passwordResetTokenRepository.delete(resetToken.get());
-		}
-		 if (!userService.existsByEmail(email)) {
-		        return new ResponseEntity<>("Email not found", HttpStatus.NOT_FOUND);
-		    }
-		
-		
-		otpService.saveOtp(email,otp);
-		emailService.sendOtpEmail(email,otp);
-		
-		return new ResponseEntity<>("OTP sent to email", HttpStatus.OK);
-		
+		return userService.forgetPassword(passwordResetRequest);
 	}
 	
 	@GetMapping("validate")
