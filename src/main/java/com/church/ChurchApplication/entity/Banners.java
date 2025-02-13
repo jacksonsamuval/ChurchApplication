@@ -2,10 +2,9 @@ package com.church.ChurchApplication.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
-@Entity
+@Entity             
 public class Banners {
 
     @Id

@@ -1,6 +1,7 @@
 package com.church.ChurchApplication.controller;
 
 import com.church.ChurchApplication.dto.Video;
+import com.church.ChurchApplication.entity.LiveVideo;
 import com.church.ChurchApplication.entity.Songs;
 import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.entity.VideoStorage;
@@ -118,5 +119,10 @@ public class AdminController {
     @DeleteMapping("deleteId/{id}")
     public ResponseEntity<?> deletePastorId(@PathVariable Integer id){
         return pastorService.deleteId(id);
+    }
+
+    @PostMapping("addLiveVideo")
+    public ResponseEntity<?> addLiveVideo(@RequestBody LiveVideo liveVideo){
+        return videoService.addLive(liveVideo);
     }
 }

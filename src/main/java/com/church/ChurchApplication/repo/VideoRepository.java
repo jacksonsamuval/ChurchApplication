@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface VideoRepository extends JpaRepository<VideoStorage, Integer> {
 
-    List<VideoStorage> findTop4ByOrderByCreatedAtDesc();
-
-    List<VideoStorage> findTop5ByOrderByCreatedAtDesc();
+    List<VideoStorage> findAllByOrderByCreatedAtDesc();
+    List<VideoStorage> findTop5ByUrlIsNotNullOrderByCreatedAtDesc();
 }

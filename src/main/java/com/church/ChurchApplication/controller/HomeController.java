@@ -161,6 +161,19 @@ public class HomeController {
         return bannerService.getBanners();
     }
 
+    @GetMapping("getLiveVideo")
+    public ResponseEntity<?> getLiveVideo(){
+        try{
+            return videoService.getLiveVideo();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("error");
+        }
+    }
+
+    @GetMapping("getAllVideos")
+    public ResponseEntity<?> getAllVideo(){
+        return videoService.getAllVideo();
+    }
 }
 
 

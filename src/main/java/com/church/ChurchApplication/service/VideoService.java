@@ -1,7 +1,9 @@
 package com.church.ChurchApplication.service;
 
+import com.church.ChurchApplication.entity.LiveVideo;
 import com.church.ChurchApplication.entity.VideoStorage;
 import com.church.ChurchApplication.repo.FavoriteVideoRepo;
+import com.church.ChurchApplication.repo.LiveVideoRepo;
 import com.church.ChurchApplication.repo.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class VideoService {
 
     @Autowired
     private FavoriteVideoRepo favoriteVideoRepo;
+
+    @Autowired
+    private LiveVideoRepo liveVideoRepo;
 
     public ResponseEntity<?> findVideoById(Integer videoId) {
 
@@ -48,7 +53,7 @@ public class VideoService {
 
 
     public ResponseEntity<?> getRecentVideos() {
-        List<VideoStorage> videoStorageList = videoRepository.findTop5ByOrderByCreatedAtDesc();
+        List<VideoStorage> videoStorageList = videoRepository.findTop5ByUrlIsNotNullOrderByCreatedAtDesc();
         return new ResponseEntity<>(videoStorageList,HttpStatus.OK);
     }
 
@@ -74,6 +79,31 @@ public class VideoService {
             return new ResponseEntity<>(videoStorage,HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>("error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> addLive(LiveVideo liveVideo) {
+        try{
+            List<LiveVideo> test = liveVideoRepo.findAll();
+            if (test.isEmpty()){
+                LiveVideo saved = liveVideoRepo.save(liveVideo);
+                return ResponseEntity.status(200).body(saved);
+            } else {
+                liveVideoRepo.deleteAll();
+                LiveVideo saved = liveVideoRepo.save(liveVideo);
+                return ResponseEntity.status(200).body(saved);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("error");
+        }
+    }
+
+    public ResponseEntity<?> getLiveVideo() {
+        List<LiveVideo> liveVideo = liveVideoRepo.findAll();
+        if (liveVideo.isEmpty()){
+            return ResponseEntity.status(400).body("No Video");
+        } else {
+            return ResponseEntity.status(200).body(liveVideo);
         }
     }
 }
