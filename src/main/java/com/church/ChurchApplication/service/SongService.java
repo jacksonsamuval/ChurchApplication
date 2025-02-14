@@ -57,9 +57,11 @@ public class SongService {
     public ResponseEntity<?> editSongs(Integer songId, Songs songs) {
         try {
             Songs song = songsRepo.findById(songId).orElseThrow(()-> new RuntimeException("Not Found"));
-            song.setSongName(songs.getSongName());
+            song.setTamilSongName(songs.getTamilSongName());
+            song.setKannadaSongName(songs.getKannadaSongName());
             song.setSongType(songs.getSongType());
-            song.setSong(song.getSong());
+            song.setKannadaSong(song.getKannadaSong());
+            song.setTamilSong(song.getTamilSong());
             songsRepo.save(song);
             return new ResponseEntity<>(song,HttpStatus.OK);
         } catch (Exception e) {

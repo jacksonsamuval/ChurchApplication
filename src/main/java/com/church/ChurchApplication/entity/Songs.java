@@ -12,15 +12,52 @@ public class Songs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String songName;
+    private String tamilSongName;
+    private String kannadaSongName;
     private String songType;
 
     @Lob
     @Column(columnDefinition = "Text")
-    private String song;
+    private String tamilSong;
+
+    @Lob
+    @Column(columnDefinition = "Text")
+    private String kannadaSong;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public String getTamilSongName() {
+        return tamilSongName;
+    }
+
+    public void setTamilSongName(String tamilSongName) {
+        this.tamilSongName = tamilSongName;
+    }
+
+    public String getKannadaSongName() {
+        return kannadaSongName;
+    }
+
+    public void setKannadaSongName(String kannadaSongName) {
+        this.kannadaSongName = kannadaSongName;
+    }
+
+    public String getTamilSong() {
+        return tamilSong;
+    }
+
+    public void setTamilSong(String tamilSong) {
+        this.tamilSong = tamilSong;
+    }
+
+    public String getKannadaSong() {
+        return kannadaSong;
+    }
+
+    public void setKannadaSong(String kannadaSong) {
+        this.kannadaSong = kannadaSong;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -38,14 +75,6 @@ public class Songs {
         this.id = id;
     }
 
-    public String getSongName() {
-        return songName;
-    }
-
-    public void setSongName(String songName) {
-        this.songName = songName;
-    }
-
     public String getSongType() {
         return songType;
     }
@@ -53,15 +82,6 @@ public class Songs {
     public void setSongType(String songType) {
         this.songType = songType;
     }
-
-    public String getSong() {
-        return song;
-    }
-
-    public void setSong(String song) {
-        this.song = song;
-    }
-
     public Songs() {
     }
 }

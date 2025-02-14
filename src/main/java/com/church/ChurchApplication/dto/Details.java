@@ -10,6 +10,15 @@ public class Details {
     private String email;
     private String role;
     private String userName;
+    private Gender gender;
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
 
     public String getName() {
         return name;

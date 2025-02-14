@@ -101,6 +101,7 @@ public class HomeAuthController {
 				details.setUserName(userService1.getUsername());
 				details.setEmail(email);
 				details.setRole(userService1.getRole());
+				details.setGender(userService1.getGender());
 				details.setMobileNo(userService1.getMobileNo());
 				details.setName(userService1.getName());
 

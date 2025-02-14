@@ -1,12 +1,9 @@
 package com.church.ChurchApplication.entity;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import com.church.ChurchApplication.dto.Gender;
 import jakarta.persistence.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 
@@ -23,6 +20,8 @@ public class Ulogin{
 	private String mobileNo;
 	private String username;
 	private String password;
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
 
 	@Column(nullable = false)
 	private String role = "USER";
@@ -69,10 +68,17 @@ public class Ulogin{
 		this.profilePicture = profilePicture;
 	}
 
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+
 	public Integer getId() {
 		return id;
 	}
-
 
 
 
