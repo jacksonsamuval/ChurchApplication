@@ -118,6 +118,15 @@ public class HomeController {
         return playListService.deletePlayList(playListId);
     }
 
+    @GetMapping("/getAllSongs")
+    public ResponseEntity<?> getAllSongs(){
+        try{
+            return songService.getAllSongs();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("error");
+        }
+    }
+
     @GetMapping("/getSongs/{songId}")
     public ResponseEntity<?> getSongs(@PathVariable Integer songId)
     {

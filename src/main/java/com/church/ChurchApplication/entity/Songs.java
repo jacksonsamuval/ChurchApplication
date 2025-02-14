@@ -2,7 +2,6 @@ package com.church.ChurchApplication.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.w3c.dom.Text;
 
 import java.time.LocalDateTime;
 
@@ -12,13 +11,13 @@ public class Songs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String tamilSongName;
+    private String englishSongName;
     private String kannadaSongName;
     private String songType;
-
+    private String artistName;
     @Lob
     @Column(columnDefinition = "Text")
-    private String tamilSong;
+    private String englishSong;
 
     @Lob
     @Column(columnDefinition = "Text")
@@ -27,12 +26,20 @@ public class Songs {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public String getTamilSongName() {
-        return tamilSongName;
+    public String getArtistName() {
+        return artistName;
     }
 
-    public void setTamilSongName(String tamilSongName) {
-        this.tamilSongName = tamilSongName;
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getEnglishSongName() {
+        return englishSongName;
+    }
+
+    public void setEnglishSongName(String englishSongName) {
+        this.englishSongName = englishSongName;
     }
 
     public String getKannadaSongName() {
@@ -43,12 +50,12 @@ public class Songs {
         this.kannadaSongName = kannadaSongName;
     }
 
-    public String getTamilSong() {
-        return tamilSong;
+    public String getEnglishSong() {
+        return englishSong;
     }
 
-    public void setTamilSong(String tamilSong) {
-        this.tamilSong = tamilSong;
+    public void setEnglishSong(String englishSong) {
+        this.englishSong = englishSong;
     }
 
     public String getKannadaSong() {

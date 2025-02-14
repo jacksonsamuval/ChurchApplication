@@ -1,5 +1,6 @@
 package com.church.ChurchApplication.config;
 
+import com.church.ChurchApplication.dto.Gender;
 import com.church.ChurchApplication.entity.Ulogin;
 import com.church.ChurchApplication.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class AdminAccountCreator implements ApplicationRunner {
         {
             Ulogin admin = new Ulogin();
             admin.setUsername("admin");
+            admin.setGender(Gender.MALE);
             admin.setName("Administrator");
             admin.setEmail(adminEmail);
             admin.setMobileNo("7795011089");
