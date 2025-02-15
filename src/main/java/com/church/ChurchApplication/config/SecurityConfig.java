@@ -50,7 +50,7 @@ public class SecurityConfig {
 								"auth/register", "/auth/register", "auth/forgotPassword", "auth/home", "auth/hello",
 								"verifyOtp", "/verifyOtp", "/updatePassword", "/validate", "validate",
 								"auth/otpVerification", "/auth/otpVerification", "/auth/resendOtp", "auth/resendOtp",
-								"home/pastor/addPastorId"
+								"home/pastor/addPastorId","admin/login"
 						).permitAll()
 						.anyRequest().authenticated()
 				)

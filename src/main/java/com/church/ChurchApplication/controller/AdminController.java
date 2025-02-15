@@ -1,5 +1,6 @@
 package com.church.ChurchApplication.controller;
 
+import com.church.ChurchApplication.dto.UsersLogin;
 import com.church.ChurchApplication.dto.Video;
 import com.church.ChurchApplication.entity.LiveVideo;
 import com.church.ChurchApplication.entity.Songs;
@@ -31,6 +32,13 @@ public class AdminController {
 
     @Autowired
     private PastorService pastorService;
+    @Autowired
+    private AdminService adminService;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> adminLogin(@RequestBody UsersLogin usersLogin){
+        return adminService.adminLogin(usersLogin);
+    }
 
     @PostMapping("/addVideo")
     public ResponseEntity<?> saveVideo(@RequestBody VideoStorage videoStorage )
