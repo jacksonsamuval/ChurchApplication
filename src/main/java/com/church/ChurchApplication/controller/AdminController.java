@@ -42,7 +42,7 @@ public class AdminController {
 
     @PostMapping("/addVideo")
     public ResponseEntity<?> saveVideo(@RequestBody VideoStorage videoStorage )
-    {
+    {   
         try{
             VideoStorage video = videoService.saveVideo(videoStorage);
             return new ResponseEntity<>(video, HttpStatus.CREATED);

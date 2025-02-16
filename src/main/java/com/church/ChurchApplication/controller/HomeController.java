@@ -127,6 +127,15 @@ public class HomeController {
         }
     }
 
+    @GetMapping("getSongsFilter")
+    public ResponseEntity<?> getSongsBasedOnFav(){
+        try{
+            return songService.getSongsBasedOnLikes();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("error");
+        }
+    }
+
     @GetMapping("/getSongs/{songId}")
     public ResponseEntity<?> getSongs(@PathVariable Integer songId)
     {
